@@ -189,7 +189,7 @@ def extract_vr_statistics(points, simplex_tree, SC):
     num_triangles = len(triangles)
 
     # ---------------------------
-    # 1. 1-skeleton graph statistics
+    # 1. Simple graph statistics
     # ---------------------------
     degrees = np.array([deg for _, deg in G.degree()])
     avg_degree = float(np.mean(degrees))
@@ -209,6 +209,28 @@ def extract_vr_statistics(points, simplex_tree, SC):
         fiedler = float(eigs_sorted[1])  # second-smallest eigenvalue
     except Exception:
         fiedler = np.nan  # Graph may be too small / disconnected
+
+    # ---------------------------
+    # 2. Triangle stats
+    # ---------------------------
+
+    #triangle degree per edge (number of triangles incident to an edge)
+    tri = {}
+    for u, v in G.edges():
+        # intersection of neighbor sets = common neighbors
+        tri[(u, v)] = len(set(G[u]) & set(G[v]))
+
+    values = np.array(list(tri.values()))
+
+    avg_triangle_degree = values.mean()
+    variance_triangle_degree = values.var(ddof=0)
+
+    # triangle participation per node
+    triangles_per_node = nx.triangles(G)   # dict: node → number of triangles
+    values = np.array(list(triangles_per_node.values()))
+
+    avg_triangle_participation = values.mean()
+    variance_triangle_participation = values.var(ddof=0)
 
     # ---------------------------
     # 3. Topological invariants (Betti numbers & persistence)
@@ -269,6 +291,12 @@ def extract_vr_statistics(points, simplex_tree, SC):
         "density": density,
         "giant_fraction": giant_fraction,
         "fiedler_value": fiedler,
+
+        # Triangle stats
+        "avg_triangles_per_edge": avg_triangle_degree,
+        "variance_triangles_per_edge": variance_triangle_degree,
+        "avg_triangles_per_node": avg_triangle_participation,
+        "variance_triangles_per_node": variance_triangle_participation,
 
         # Topology
         "betti_0": betti_0,
