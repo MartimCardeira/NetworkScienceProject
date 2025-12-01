@@ -178,12 +178,6 @@ def extract_vr_statistics(points, simplex_tree, SC):
     for node in SC.nodes:
         G.add_node(node)
 
-    # Add all 1-simplices (edges)
-    #for simplex in SC.edges.filterby("order", 1):
-    #    if len(simplex) == 2:
-    #        u, v = simplex
-    #        G.add_edge(u, v)
-
     for filtered_value in simplex_tree.get_filtration():
         if len(filtered_value[0]) == 2:
             G.add_edge(filtered_value[0][0], filtered_value[0][1])
@@ -215,31 +209,6 @@ def extract_vr_statistics(points, simplex_tree, SC):
         fiedler = float(eigs_sorted[1])  # second-smallest eigenvalue
     except Exception:
         fiedler = np.nan  # Graph may be too small / disconnected
-
-    # ---------------------------
-    # 2. Higher-order quantities
-    # ---------------------------
-
-    # Triangle degree per edge (= # of triangles incident to each edge)
-    edge_tri_degrees = []
-    for e in SC.edges.filterby("order", 1):
-        memberships = SC.edges.memberships(e)  # list of simplex IDs
-        tri_count = sum(1 for s in memberships if SC.edges.order(s) == 2)
-        edge_tri_degrees.append(tri_count)
-
-    edge_tri_degrees = np.array(edge_tri_degrees)
-    avg_edge_triangle_degree = float(np.mean(edge_tri_degrees)) if len(edge_tri_degrees) else 0.0
-    var_edge_triangle_degree = float(np.var(edge_tri_degrees)) if len(edge_tri_degrees) else 0.0
-
-    # Triangle participation per node
-    triangles_per_node = []
-    for n in SC.nodes:
-        triangles_for_node = SC.nodes.memberships(n, order=2)
-        triangles_per_node.append(len(triangles_for_node))
-
-    triangles_per_node = np.array(triangles_per_node)
-    avg_triangles_per_node = float(np.mean(triangles_per_node))
-    var_triangles_per_node = float(np.var(triangles_per_node))
 
     # ---------------------------
     # 3. Topological invariants (Betti numbers & persistence)
@@ -300,12 +269,6 @@ def extract_vr_statistics(points, simplex_tree, SC):
         "density": density,
         "giant_fraction": giant_fraction,
         "fiedler_value": fiedler,
-
-        # Triangle/HO structure
-        "avg_edge_triangle_degree": avg_edge_triangle_degree,
-        "var_edge_triangle_degree": var_edge_triangle_degree,
-        "avg_triangles_per_node": avg_triangles_per_node,
-        "var_triangles_per_node": var_triangles_per_node,
 
         # Topology
         "betti_0": betti_0,
