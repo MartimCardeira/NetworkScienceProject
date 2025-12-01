@@ -175,8 +175,6 @@ def extract_vr_statistics(points, simplex_tree, SC):
     # Convert SC to 1-skeleton NetworkX graph
     # G = SC.get_skeleton(1).to_networkx()
     G = nx.Graph()
-
-    # Add all nodes
     for node in SC.nodes:
         G.add_node(node)
 
@@ -186,12 +184,10 @@ def extract_vr_statistics(points, simplex_tree, SC):
     #        u, v = simplex
     #        G.add_edge(u, v)
 
-
     for filtered_value in simplex_tree.get_filtration():
         if len(filtered_value[0]) == 2:
             G.add_edge(filtered_value[0][0], filtered_value[0][1])
             #edges.append(filtered_value[0])
-
 
     # Nodes / edges / triangles
     num_edges = G.number_of_edges()
@@ -330,41 +326,8 @@ theta0 = (
     2 * np.pi * np.random.rand(400, 1)
 )  # random initial values for each oscillator.
 
-#temporary
-#(rips_complex, simplex_tree) = generate_rips_complex(
-#        points, max_simplex_order, 0.160, verbose=False
-#    )
-#SC = generate_simplicial_complex(simplex_tree)
-#n = len(SC.edges.filterby("order", 2))
-#print(n)
-#temporary
 
-#r_values = np.linspace(0.13, 0.30, num=18)
-r_values = [
-    0.130,
-    0.131,
-    0.132,
-    0.133,
-    0.134,
-    0.135,
-    0.136,
-    0.137,
-    0.138,
-    0.139,
-    0.140,
-    0.141,
-    0.142,
-    0.143,
-    0.144,
-    0.145,
-    0.146,
-    0.147,
-    0.148,
-    0.149,
-    0.150,
-]
-#print(len(r_values))
-
+r_values = np.linspace(0.130, 0.150, 21)
 
 results = []
 for r in r_values:
