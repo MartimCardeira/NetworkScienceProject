@@ -5,6 +5,12 @@ import xgi
 import matplotlib.pyplot as plt
 from multiprocessing import Pool
 
+#my model: set the amount of triangles we want in our network.
+#start with one triangle
+#for each new triangle we add, we have two cases:
+#with probability p, add 2 new nodes and connect them to an existing node
+#with probability 1-p, add 1 new node and connect it to either end of existing edge
+#keeping adding triangles until we've reached the target number.
 
 def generate_graph(p, target_triangles, draw=False):
     SC = xgi.SimplicialComplex()
