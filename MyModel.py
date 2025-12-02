@@ -25,7 +25,7 @@ def generate_graph(p, target_triangles, draw=False):
             SC.add_simplex([target_node, nodes - 1, nodes - 2])
 
         else:  # add 1 node
-            candidate_edges = SC.edges.filterby("order", 1).members()
+            candidate_edges = list(SC.edges.filterby("order", 1).members())
             target_node1, target_node2 = random.choice(candidate_edges)
             SC.add_node(nodes)
             nodes += 1
@@ -116,48 +116,48 @@ def run_single_experiment(args):
 """
 Main experiment loop
 """
+if __name__ == "__main__":
+    target_triangles = 50
+    p_values = np.linspace(0.00, 1.00, 101)
+    num_runs = 100
 
-target_triangles = 50
-p_values = np.linspace(0, 1, 11)
-num_runs = 50
+    omega  = np.random.rand(target_triangles, 1)
+    theta0 = 2 * np.pi * np.random.rand(target_triangles, 1)
 
-omega  = np.random.rand(target_triangles, 1)
-theta0 = 2 * np.pi * np.random.rand(target_triangles, 1)
+    results = []
+    pool = Pool()   # use all CPU cores
 
-results = []
-pool = Pool()   # use all CPU cores
+    for p in p_values:
+        print(f"\nRunning experiments for p = {p:.2f}")
 
-for p in p_values:
-    print(f"\nRunning experiments for p = {p:.2f}")
+        # Prepare arguments for all runs
+        tasks = [(p, target_triangles, omega, theta0) for _ in range(num_runs)]
 
-    # Prepare arguments for all runs
-    tasks = [(p, target_triangles, omega, theta0) for _ in range(num_runs)]
+        # Run in parallel
+        outputs = pool.map(run_single_experiment, tasks)
 
-    # Run in parallel
-    outputs = pool.map(run_single_experiment, tasks)
+        # Unpack results
+        L2_gaps        = [o[0] for o in outputs]
+        L2_traces      = [o[1] for o in outputs]
+        L2_maxes       = [o[2] for o in outputs]
+        L2_conds       = [o[3] for o in outputs]
+        critical_sigma = [o[4] for o in outputs]
 
-    # Unpack results
-    L2_gaps        = [o[0] for o in outputs]
-    L2_traces      = [o[1] for o in outputs]
-    L2_maxes       = [o[2] for o in outputs]
-    L2_conds       = [o[3] for o in outputs]
-    critical_sigma = [o[4] for o in outputs]
+        # Store averages
+        results.append({
+            "p": p,
+            "mean_L2_gap": float(np.mean(L2_gaps)),
+            "std_L2_gap":  float(np.std(L2_gaps)),
+            "mean_L2_trace": float(np.mean(L2_traces)),
+            "mean_L2_max": float(np.mean(L2_maxes)),
+            "mean_L2_cond": float(np.mean(L2_conds)),
+            "mean_critical_sigma": float(np.mean(critical_sigma)),
+            "std_critical_sigma":  float(np.std(critical_sigma)),
+        })
 
-    # Store averages
-    results.append({
-        "p": p,
-        "mean_L2_gap": float(np.mean(L2_gaps)),
-        "std_L2_gap":  float(np.std(L2_gaps)),
-        "mean_L2_trace": float(np.mean(L2_traces)),
-        "mean_L2_max": float(np.mean(L2_maxes)),
-        "mean_L2_cond": float(np.mean(L2_conds)),
-        "mean_critical_sigma": float(np.mean(critical_sigma)),
-        "std_critical_sigma":  float(np.std(critical_sigma)),
-    })
+    pool.close()
+    pool.join()
 
-pool.close()
-pool.join()
-
-df = pd.DataFrame(results)
-df.to_csv("p_experiment_results_averaged.csv", index=False)
-print(df)
+    df = pd.DataFrame(results)
+    df.to_csv("p_experiment_results_averaged.csv", index=False)
+    print(df)
