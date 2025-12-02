@@ -113,6 +113,7 @@ Main experiment loop, play around with variables here
 
 target_triangles = 50
 p_values = np.linspace(0, 1, 11) #[0.0, 0.1, 0.2,..., 1.0]
+num_runs = 50 #number of times we repeat the experiment per p value
 
 omega  = np.random.rand(target_triangles, 1)
 theta0 = 2 * np.pi * np.random.rand(target_triangles, 1)
@@ -120,26 +121,42 @@ theta0 = 2 * np.pi * np.random.rand(target_triangles, 1)
 results = []
 
 for p in p_values:
-    print(f"Running experiment for p = {p:.2f}")
+    print(f"\nRunning experiments for p = {p:.2f}")
 
-    # generate simplicial complex
-    SC = generate_graph(p, target_triangles, draw=True)
+    L2_gaps = []
+    L2_traces = []
+    L2_maxes = []
+    L2_conds = []
+    critical_sigmas = []
 
-    # spectral stats
-    L2_gap, L2_trace, L2_max, L2_cond = L2_stats(SC)
+    for run in range(num_runs):
+        SC = generate_graph(p, target_triangles)
 
-    # critical sigma
-    critical_sigma = find_critical_sigma(SC, omega, theta0)
+        # L2 spectral quantities
+        L2_gap, L2_trace, L2_max, L2_cond = L2_stats(SC)
 
+        # Critical sigma
+        critical_sigma = find_critical_sigma(SC, omega, theta0)
+
+        # Store the results
+        L2_gaps.append(L2_gap)
+        L2_traces.append(L2_trace)
+        L2_maxes.append(L2_max)
+        L2_conds.append(L2_cond)
+        critical_sigmas.append(critical_sigma)
+
+    # Append the averages across runs
     results.append({
         "p": p,
-        "L2_gap": L2_gap,
-        "L2_trace": L2_trace,
-        "L2_max": L2_max,
-        "L2_cond": L2_cond,
-        "critical_sigma": critical_sigma,
+        "mean_L2_gap":    float(np.mean(L2_gaps)),
+        "std_L2_gap":     float(np.std(L2_gaps)),
+        "mean_L2_trace":  float(np.mean(L2_traces)),
+        "mean_L2_max":    float(np.mean(L2_maxes)),
+        "mean_L2_cond":   float(np.mean(L2_conds)),
+        "mean_critical_sigma": float(np.mean(critical_sigmas)),
+        "std_critical_sigma":  float(np.std(critical_sigmas)),
     })
 
 df = pd.DataFrame(results)
-df.to_csv("p_experiment_results.csv", index=False)
+df.to_csv("p_experiment_results_averaged.csv", index=False)
 print(df)
