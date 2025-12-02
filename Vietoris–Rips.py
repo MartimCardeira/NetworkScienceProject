@@ -1,3 +1,5 @@
+from itertools import combinations
+
 import numpy as np
 import pandas as pd
 import xgi
@@ -276,8 +278,49 @@ def extract_vr_statistics(points, simplex_tree, SC):
 
     local_density = float(np.mean(np.sum(D < r_est, axis=1)))
 
+    # ------------------------------------------
+    # 5. Boundary, Hodge Laplacian, Spectral gap
+    # ------------------------------------------
+    edge_ids = SC.edges.filterby("order", 1)
+    tri_ids  = SC.edges.filterby("order", 2)
+
+    edges = [tuple(sorted(SC.edges.members(eid))) for eid in edge_ids]
+    triangles = [tuple(sorted(SC.edges.members(tid))) for tid in tri_ids]
+
+
+    edge_index = {e: i for i, e in enumerate(edges)}
+
+    # Boundary matrix shape (#edges × #triangles)
+    B2 = np.zeros((len(edges), len(triangles)))
+
+    for j, tri in enumerate(triangles):
+        for e in combinations(tri, 2):
+            e = tuple(sorted(e))
+            i = edge_index[e]
+            B2[i, j] = 1
+
+    L2 = B2.T @ B2     # triangle × triangle Laplacian
+    eigs = np.linalg.eigvalsh(L2)
+
+    # Identify zero and positive eigenvalues
+    zero_mask = eigs <= 1e-8
+    positive = eigs[~zero_mask]
+
+    if positive.size == 0:
+        L2_gap = 0.0
+    else:
+        L2_gap = float(positive[0])
+
+    L2_max = float(eigs[-1])
+    L2_trace = float(np.trace(L2))
+
+    if L2_gap > 1e-8:
+        L2_cond = float(L2_max / L2_gap)
+    else:
+        L2_cond = np.inf
+
     # ---------------------------
-    # 5. Package into dict
+    # 6. Package into dict
     # ---------------------------
     return {
         # Basic
@@ -308,6 +351,13 @@ def extract_vr_statistics(points, simplex_tree, SC):
         "avg_edge_length": avg_edge_length,
         "local_density": local_density,
         "r_est": r_est,
+
+        # Spectral gap
+        "L2_spectral_gap": L2_gap,
+        "L2_max_eigenvalue": L2_max,
+        "L2_trace": L2_trace,
+        "L2_cond": L2_cond,
+
     }
 
 
