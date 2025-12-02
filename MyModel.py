@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 #add 2 new nodes, connect to existing node with probability p
 #add 1 new node, connect to either end of existing edge with probability 1 - p
 
-p = 1.0
+#p = 1.0
 target_triangles = 30
 
 SC = xgi.SimplicialComplex()
@@ -17,25 +17,52 @@ triangles = 1
 SC.add_nodes_from([0,1,2])
 SC.add_simplex([0,1,2])
 
-while triangles < 20:
-    roll = np.random.random()
+for p in np.linspace(0.0, 1.0, 11):
+    while triangles < 30:
+        roll = np.random.random()
 
-    if roll <= p: #add 2 nodes
-        target_node = np.random.randint(nodes)
-        SC.add_node(nodes)
-        nodes += 1
-        SC.add_node(nodes)
-        nodes += 1
-        SC.add_simplex([target_node, nodes-1, nodes-2])
+        if roll <= p: #add 2 nodes
+            target_node = np.random.randint(nodes)
+            SC.add_node(nodes)
+            nodes += 1
+            SC.add_node(nodes)
+            nodes += 1
+            SC.add_simplex([target_node, nodes-1, nodes-2])
 
-    else: #add 1 node
-        candidate_edges = SC.edges.filterby("order", 1).members()
-        target_node1, target_node2 = random.choice(candidate_edges)
-        SC.add_node(nodes)
-        nodes += 1
-        SC.add_simplex([target_node1, target_node2, nodes - 1])
+        else: #add 1 node
+            candidate_edges = SC.edges.filterby("order", 1).members()
+            target_node1, target_node2 = random.choice(candidate_edges)
+            SC.add_node(nodes)
+            nodes += 1
+            SC.add_simplex([target_node1, target_node2, nodes - 1])
 
-    triangles += 1
+        triangles += 1
 
-xgi.draw(SC)
-plt.show()
+    xgi.draw(SC)
+    plt.show()
+
+    L2 = xgi.hodge_laplacian(SC, order=2, orientations=None, index=False)
+    eigs = np.linalg.eigvalsh(L2)
+
+    # Identify zero and positive eigenvalues
+    zero_mask = eigs <= 1e-8
+    positive = eigs[~zero_mask]
+
+    if positive.size == 0:
+        L2_gap = 0.0
+    else:
+        L2_gap = float(positive[0])
+
+    L2_max = float(eigs[-1])
+    L2_trace = float(np.trace(L2))
+
+    if L2_gap > 1e-8:
+        L2_cond = float(L2_max / L2_gap)
+    else:
+        L2_cond = np.inf
+
+    print(f"For the triange with p = {p}:")
+    print(L2_gap)
+    print(L2_trace)
+    print(L2_cond)
+    print(L2_max)
