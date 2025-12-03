@@ -10,9 +10,9 @@ from multiprocessing import Pool
 #for each new tetrahedron we add, we have three cases
 #the probabilities for each case follow the Bernstein polynomial, allowing one parameter p to dictate the probabilities
 #of each case: https://en.wikipedia.org/wiki/Bernstein_polynomial
-#with probability (1-p)^2, add 3 new nodes and connect them to an existing node
+#with probability p^2, add 3 new nodes and connect them to an existing node
 #with probability 2p(1-p), add 2 new nodes and connect them to an existing edge
-#with probability p^2, add 1 new node and connect it to an existing face
+#with probability (1-p)^2, add 1 new node and connect it to an existing face
 #keeping adding triangles until we've reached the target number.
 
 def generate_graph(p, target_tetrahedrons, draw=False):
@@ -25,7 +25,7 @@ def generate_graph(p, target_tetrahedrons, draw=False):
     while tetrahedrons < target_tetrahedrons:
         roll = np.random.random()
 
-        if roll <= (1-p)**2:  # add 3 nodes
+        if roll <= p**2:  # add 3 nodes
             target_node = np.random.randint(nodes)
             SC.add_node(nodes)
             nodes += 1
@@ -35,7 +35,7 @@ def generate_graph(p, target_tetrahedrons, draw=False):
             nodes += 1
             SC.add_simplex([target_node, nodes - 1, nodes - 2, nodes - 3])
 
-        elif roll <= (1-p)**2 + 2*p*(1-p):  # add 2 nodes
+        elif roll <= p**2 + 2*p*(1-p):  # add 2 nodes
             candidate_edges = list(SC.edges.filterby("order", 1).members())
             target_node1, target_node2 = random.choice(candidate_edges)
             SC.add_node(nodes)
