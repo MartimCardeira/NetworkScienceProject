@@ -16,6 +16,8 @@ from multiprocessing import Pool
 #with probability (1-p)^3, add 1 new node and connect it to an existing tetrahedron
 #keeping adding triangles until we've reached the target number.
 
+np.random.seed(2275)
+
 def generate_graph(p, target_fivecells, draw=False):
     SC = xgi.SimplicialComplex()
     nodes = 5

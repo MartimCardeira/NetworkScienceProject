@@ -15,6 +15,8 @@ from multiprocessing import Pool
 #with probability (1-p)^2, add 1 new node and connect it to an existing face
 #keeping adding triangles until we've reached the target number.
 
+np.random.seed(2275)
+
 def generate_graph(p, target_tetrahedrons, draw=False):
     SC = xgi.SimplicialComplex()
     nodes = 4
