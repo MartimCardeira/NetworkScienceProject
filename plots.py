@@ -1,46 +1,82 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# Load your CSVs (rename these if your filenames differ)
-df_tri = pd.read_csv("triangle.csv")
+# Load your CSVs
+df_tri   = pd.read_csv("triangle.csv")
 df_tetra = pd.read_csv("tetrahedron.csv")
-df_5 = pd.read_csv("5cell.csv")
-df_6 = pd.read_csv("6cell.csv")
+df_5     = pd.read_csv("5cell.csv")
+df_6     = pd.read_csv("6cell.csv")
+df_7     = pd.read_csv("7cell.csv")     # <-- NEW
 
-plt.figure(figsize=(10,6))
+datasets = [
+    (df_tri,   "Triangles (order=2)",     "blue"),
+    (df_tetra, "Tetrahedra (order=3)",    "green"),
+    (df_5,     "5-cells (order=4)",       "orange"),
+    (df_6,     "6-cells (order=5)",       "red"),
+    (df_7,     "7-cells (order=6)",       "purple"),
+]
 
-# Plot all curves
-plt.plot(df_tri["p"],   df_tri["sigma"],   label="Triangles (order=2)",  color="blue")
-plt.plot(df_tetra["p"], df_tetra["sigma"], label="Tetrahedra (order=3)", color="green")
-plt.plot(df_5["p"],     df_5["sigma"],     label="5-cells (order=4)",    color="orange")
-plt.plot(df_6["p"],     df_6["sigma"],     label="6-cells (order=5)",    color="red")
+# 1. Critical sigma vs. p
 
-# Make it pretty
+plt.figure(figsize=(10, 6))
+
+for df, label, color in datasets:
+    plt.plot(
+        df["p"],
+        df["sigma"],   # <-- correct column name
+        label=label,
+        color=color,
+        linewidth=2
+    )
+
 plt.xlabel("p")
 plt.ylabel("Mean Critical σ")
-plt.title("Comparison of Critical Sigma across Generalized Growth Models")
+plt.title("Critical Sigma vs. p for Generalized Growth Models")
 plt.grid(True, alpha=0.3)
 plt.legend()
 plt.tight_layout()
-
 plt.show()
 
+# 2. Critical sigma vs. spectral gap
 
-#second plot
-plt.figure(figsize=(10,6))
+plt.figure(figsize=(10, 6))
 
-# Plot all curves
-plt.plot(df_tri["spectral_gap"],   df_tri["sigma"],   label="Triangles (order=2)",  color="blue")
-plt.plot(df_tetra["spectral_gap"], df_tetra["sigma"], label="Tetrahedra (order=3)", color="green")
-plt.plot(df_5["spectral_gap"],     df_5["sigma"],     label="5-cells (order=4)",    color="orange")
-plt.plot(df_6["spectral_gap"],     df_6["sigma"],     label="6-cells (order=5)",    color="red")
+for df, label, color in datasets:
 
-# Make it pretty
-plt.xlabel("L_n spectral gap")
+    plt.plot(
+        df["spectral_gap"],
+        df["sigma"],
+        label=f"{label} (spectral_gap)",
+        color=color,
+        linewidth=2
+    )
+
+plt.xlabel("L_n Spectral Gap")
 plt.ylabel("Mean Critical σ")
-plt.title("Comparison of the n-order Laplacian Gap across Generalized Growth Models")
+plt.title("Critical Sigma vs. First n-Order Laplacian Eigenvalue")
 plt.grid(True, alpha=0.3)
 plt.legend()
 plt.tight_layout()
+plt.show()
 
+# 3. Critical sigma vs. Max eigenvalue
+
+plt.figure(figsize=(10, 6))
+
+for df, label, color in datasets:
+
+    plt.plot(
+        df["eig_max"],
+        df["sigma"],
+        label=f"{label} (eig_max)",
+        color=color,
+        linewidth=2
+    )
+
+plt.xlabel("L_n Largest Eigenvalue")
+plt.ylabel("Mean Critical σ")
+plt.title("Critical Sigma vs. Largest n-Order Laplacian Eigenvalue")
+plt.grid(True, alpha=0.3)
+plt.legend()
+plt.tight_layout()
 plt.show()
