@@ -12,6 +12,8 @@ from multiprocessing import Pool
 #with probability 1-p, add 1 new node and connect it to either end of existing edge
 #keeping adding triangles until we've reached the target number.
 
+np.random.seed(2275)
+
 def generate_graph(p, target_triangles, draw=False):
     SC = xgi.SimplicialComplex()
     nodes = 3
