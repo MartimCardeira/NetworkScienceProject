@@ -110,7 +110,7 @@ def is_synchronized(values, r_threshold=0.80, std_threshold=0.002):
     return (np.std(values) < std_threshold) and (np.mean(values) > r_threshold)
 
 
-def find_critical_sigma(SC, omega, theta0, sigma_low=0.2, sigma_high=1.0, tol=0.001):
+def find_critical_sigma(SC, omega, theta0, sigma_low=0.0, sigma_high=0.3, tol=0.001):
     #just a small sanity check
     n4 = len(SC.edges.filterby("order", 4))
     assert omega.shape[0] == n4
