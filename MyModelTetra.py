@@ -168,11 +168,11 @@ if __name__ == "__main__":
         # Store averages
         results.append({
             "p": p,
-            "mean_L3_gap": float(np.mean(L3_gaps)),
-            "std_L3_gap":  float(np.std(L3_gaps)),
-            "mean_L3_trace": float(np.mean(L3_traces)),
-            "mean_L3_max": float(np.mean(L3_maxes)),
-            "mean_L3_cond": float(np.mean(L3_conds)),
+            "mean_lambda_2": float(np.mean(L3_gaps)),
+            "std_lambda_2":  float(np.std(L3_gaps)),
+            "mean_trace": float(np.mean(L3_traces)),
+            "mean_lambda_max": float(np.mean(L3_maxes)),
+            "mean_lambda_cond": float(np.mean(L3_conds)),
             "mean_critical_sigma": float(np.mean(critical_sigma)),
             "std_critical_sigma":  float(np.std(critical_sigma)),
         })
@@ -181,5 +181,5 @@ if __name__ == "__main__":
     pool.join()
 
     df = pd.DataFrame(results)
-    df.to_csv("p_experiment_results_tetra_averaged.csv", index=False)
+    df.to_csv("tetrahedron_experiment.csv", index=False)
     print(df)
