@@ -28,10 +28,19 @@ plt.figure(figsize=(10, 6))
 for df, label, color in datasets:
     plt.plot(
         df["p"],
-        df["mean_lambda_2"],   # <-- correct column name
+        df["mean_lambda_2"],
         label=label,
         color=color,
-        linewidth=2
+        #linewidth=2
+    )
+    plt.fill_between(
+        df["p"],
+        df["mean_lambda_2"] - df["std_lambda_2"],
+        df["mean_lambda_2"] + df["std_lambda_2"],
+        color=color,
+        alpha=0.1,
+        linewidth=0,
+        zorder=1
     )
 
 plt.xlabel("p")
@@ -46,15 +55,34 @@ plt.show()
 
 plt.figure(figsize=(10, 6))
 
-for df, label, color in datasets:
+for index, (df, label, color) in enumerate(datasets):
 
     plt.plot(
         df["mean_lambda_2"],
         df["mean_critical_sigma"],
         label=f"{label} λ₂",
         color=color,
-        linewidth=2
+        #linewidth=2
     )
+    plt.fill_between(
+        df["mean_lambda_2"],
+        df["mean_critical_sigma"] - df["std_critical_sigma"],
+        df["mean_critical_sigma"] + df["std_critical_sigma"],
+        color=color,
+        alpha=0.1,
+        linewidth=0,
+        zorder=1
+    )
+    """
+    plt.axhline(
+        y=1.0/float(index+3),
+        color=color,
+        linestyle="--",
+        linewidth=1.5,
+        alpha=0.7,
+        label=f"σ = {1.0/float(index+3):.3f}"
+    )
+    """
 
 plt.xlabel("Mean λ₂")
 plt.ylabel("Mean Critical σ")
@@ -75,7 +103,16 @@ for df, label, color in datasets:
         df["mean_critical_sigma"],
         label=f"{label} λₘₐₓ",
         color=color,
-        linewidth=2
+        #linewidth=2
+    )
+    plt.fill_between(
+        df["mean_lambda_max"],
+        df["mean_critical_sigma"] - df["std_critical_sigma"],
+        df["mean_critical_sigma"] + df["std_critical_sigma"],
+        color=color,
+        alpha=0.1,
+        linewidth=0,
+        zorder=1
     )
 
 plt.xlabel("Mean λₘₐₓ")
@@ -97,12 +134,51 @@ for df, label, color in datasets:
         df["mean_critical_sigma"],
         label=f"{label} λₘₐₓ/λ₂",
         color=color,
-        linewidth=2
+        #linewidth=2
+    )
+    plt.fill_between(
+        df["mean_lambda_cond"],
+        df["mean_critical_sigma"] - df["std_critical_sigma"],
+        df["mean_critical_sigma"] + df["std_critical_sigma"],
+        color=color,
+        alpha=0.1,
+        linewidth=0,
+        zorder=1
     )
 
 plt.xlabel("Mean λₘₐₓ/λ₂")
 plt.ylabel("Mean Critical σ")
 plt.title("Critical Sigma vs. Hodge Laplacian λₘₐₓ/λ₂")
+plt.grid(True, alpha=0.3)
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+#Bonus, lambda2 vs crit but without error bars and with the boundaries
+# 2. Critical sigma vs. lambda_2
+
+plt.figure(figsize=(10, 6))
+
+for index, (df, label, color) in enumerate(datasets):
+
+    plt.plot(
+        df["mean_lambda_2"],
+        df["mean_critical_sigma"],
+        label=f"{label} λ₂",
+        color=color,
+        #linewidth=2
+    )
+    plt.axhline(
+        y=1.0/float(index+3),
+        color=color,
+        linestyle="--",
+        linewidth=1.5,
+        alpha=0.7,
+        label=f"σ = {1.0/float(index+3):.3f}"
+    )
+plt.xlabel("Mean λ₂")
+plt.ylabel("Mean Critical σ")
+plt.title("Critical Sigma vs. Hodge Laplacian λ₂")
 plt.grid(True, alpha=0.3)
 plt.legend()
 plt.tight_layout()
