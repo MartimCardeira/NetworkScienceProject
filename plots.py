@@ -1,7 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# Load your CSVs
 df_tri   = pd.read_csv("triangle.csv")
 df_tetra = pd.read_csv("tetrahedron.csv")
 df_5     = pd.read_csv("5cell.csv")
@@ -15,6 +14,11 @@ datasets = [
     (df_6,     "6-cells (order=5)",       "red"),
     (df_7,     "7-cells (order=6)",       "purple"),
 ]
+#EXPERIMENT 1 PLOTS
+
+
+
+#EXPERIMENT 2 PLOTS
 
 # 1. Critical sigma vs. p
 

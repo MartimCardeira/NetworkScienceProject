@@ -154,11 +154,11 @@ if __name__ == "__main__":
         # Store averages
         results.append({
             "p": p,
-            "mean_L2_gap": float(np.mean(L2_gaps)),
-            "std_L2_gap":  float(np.std(L2_gaps)),
-            "mean_L2_trace": float(np.mean(L2_traces)),
-            "mean_L2_max": float(np.mean(L2_maxes)),
-            "mean_L2_cond": float(np.mean(L2_conds)),
+            "mean_lambda_2": float(np.mean(L2_gaps)),
+            "std_lambda_2":  float(np.std(L2_gaps)),
+            "mean_trace": float(np.mean(L2_traces)),
+            "mean_lambda_max": float(np.mean(L2_maxes)),
+            "mean_lambda_cond": float(np.mean(L2_conds)),
             "mean_critical_sigma": float(np.mean(critical_sigma)),
             "std_critical_sigma":  float(np.std(critical_sigma)),
         })
