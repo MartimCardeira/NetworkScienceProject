@@ -13,7 +13,7 @@ from scipy.spatial.distance import cdist
 n = 100
 r = 0.1 #this will be the variable we change in the experiment
 max_simplex_order = 2 #we'll limit the network to only triangles and below
-np.random.seed(654277791) #perfect, connectivity starts at r=0.130
+np.random.seed(654277791) #perfect seed for point cloud, connectivity starts at r=0.130
 
 def generate_random_points(n):
     """

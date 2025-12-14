@@ -1,11 +1,11 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-df_tri   = pd.read_csv("triangle.csv")
-df_tetra = pd.read_csv("tetrahedron.csv")
-df_5     = pd.read_csv("5cell.csv")
-df_6     = pd.read_csv("6cell.csv")
-df_7     = pd.read_csv("7cell.csv")     # <-- NEW
+df_tri   = pd.read_csv("triangle_experiment.csv")
+df_tetra = pd.read_csv("tetrahedron_experiment.csv")
+df_5     = pd.read_csv("5cell_experiment.csv")
+df_6     = pd.read_csv("6cell_experiment.csv")
+df_7     = pd.read_csv("7cell_experiment.csv")
 
 datasets = [
     (df_tri,   "Triangles (order=2)",     "blue"),
@@ -14,6 +14,7 @@ datasets = [
     (df_6,     "6-cells (order=5)",       "red"),
     (df_7,     "7-cells (order=6)",       "purple"),
 ]
+
 #EXPERIMENT 1 PLOTS
 
 
@@ -27,7 +28,7 @@ plt.figure(figsize=(10, 6))
 for df, label, color in datasets:
     plt.plot(
         df["p"],
-        df["sigma"],   # <-- correct column name
+        df["mean_critical_sigma"],   # <-- correct column name
         label=label,
         color=color,
         linewidth=2
@@ -41,16 +42,16 @@ plt.legend()
 plt.tight_layout()
 plt.show()
 
-# 2. Critical sigma vs. spectral gap
+# 2. Critical sigma vs. lambda_2
 
 plt.figure(figsize=(10, 6))
 
 for df, label, color in datasets:
 
     plt.plot(
-        df["spectral_gap"],
-        df["sigma"],
-        label=f"{label} (spectral_gap)",
+        df["mean_lambda_2"],
+        df["mean_critical_sigma"],
+        label=f"{label} (λ₂)",
         color=color,
         linewidth=2
     )
@@ -70,8 +71,8 @@ plt.figure(figsize=(10, 6))
 for df, label, color in datasets:
 
     plt.plot(
-        df["eig_max"],
-        df["sigma"],
+        df["mean_lambda_max"],
+        df["mean_critical_sigma"],
         label=f"{label} (eig_max)",
         color=color,
         linewidth=2

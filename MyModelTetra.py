@@ -181,5 +181,5 @@ if __name__ == "__main__":
     pool.join()
 
     df = pd.DataFrame(results)
-    df.to_csv("p_experiment_results_tetra_averaged.csv", index=False)
+    df.to_csv("tetrahedron_experiment.csv", index=False)
     print(df)

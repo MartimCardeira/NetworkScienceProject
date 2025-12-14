@@ -221,5 +221,5 @@ if __name__ == "__main__":
     pool.join()
 
     df = pd.DataFrame(results)
-    df.to_csv("p_experiment_results_sevencell_averaged.csv", index=False)
+    df.to_csv("7cell_experiment.csv", index=False)
     print(df)
