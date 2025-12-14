@@ -169,9 +169,9 @@ def extract_vr_statistics(points, simplex_tree, SC):
     Returns a dictionary suitable for appending to a dataframe.
     """
 
-    # ---------------------------
+
     # 0. Basic quantities
-    # ---------------------------
+
     num_points = len(points)
 
     # Convert SC to 1-skeleton NetworkX graph
@@ -190,9 +190,9 @@ def extract_vr_statistics(points, simplex_tree, SC):
     triangles = SC.edges.filterby("order", 2)
     num_triangles = len(triangles)
 
-    # ---------------------------
+
     # 1. Simple graph statistics
-    # ---------------------------
+
     degrees = np.array([deg for _, deg in G.degree()])
     avg_degree = float(np.mean(degrees))
     max_degree = float(np.max(degrees))
@@ -212,9 +212,8 @@ def extract_vr_statistics(points, simplex_tree, SC):
     except Exception:
         fiedler = np.nan  # Graph may be too small / disconnected
 
-    # ---------------------------
+
     # 2. Triangle stats
-    # ---------------------------
 
     #triangle degree per edge (number of triangles incident to an edge)
     tri = {}
@@ -234,9 +233,9 @@ def extract_vr_statistics(points, simplex_tree, SC):
     avg_triangle_participation = values.mean()
     variance_triangle_participation = values.var(ddof=0)
 
-    # ---------------------------
+
     # 3. Topological invariants (Betti numbers & persistence)
-    # ---------------------------
+
     try:
         simplex_tree.compute_persistence()
         bettis = simplex_tree.betti_numbers()
@@ -253,9 +252,9 @@ def extract_vr_statistics(points, simplex_tree, SC):
     except Exception:
         total_persistence = np.nan
 
-    # ---------------------------
+
     # 4. Geometric statistics
-    # ---------------------------
+
     pts = np.array(points)
 
     # Average edge length
@@ -278,9 +277,9 @@ def extract_vr_statistics(points, simplex_tree, SC):
 
     local_density = float(np.mean(np.sum(D < r_est, axis=1)))
 
-    # ------------------------------------------
+
     # 5. Boundary, Hodge Laplacian, Spectral gap
-    # ------------------------------------------
+
     edge_ids = SC.edges.filterby("order", 1)
     tri_ids  = SC.edges.filterby("order", 2)
 
@@ -290,7 +289,6 @@ def extract_vr_statistics(points, simplex_tree, SC):
 
     edge_index = {e: i for i, e in enumerate(edges)}
 
-    # Boundary matrix shape (#edges × #triangles)
     B2 = np.zeros((len(edges), len(triangles)))
 
     for j, tri in enumerate(triangles):
@@ -299,10 +297,9 @@ def extract_vr_statistics(points, simplex_tree, SC):
             i = edge_index[e]
             B2[i, j] = 1
 
-    L2 = B2.T @ B2     # triangle × triangle Laplacian
+    L2 = B2.T @ B2
     eigs = np.linalg.eigvalsh(L2)
 
-    # Identify zero and positive eigenvalues
     zero_mask = eigs <= 1e-8
     positive = eigs[~zero_mask]
 
@@ -319,45 +316,30 @@ def extract_vr_statistics(points, simplex_tree, SC):
     else:
         L2_cond = np.inf
 
-    # ---------------------------
-    # 6. Package into dict
-    # ---------------------------
     return {
-        # Basic
         "num_points": num_points,
         "num_edges": num_edges,
         "num_triangles": num_triangles,
-
-        # Graph (1-skeleton)
         "avg_degree": avg_degree,
         "max_degree": max_degree,
         "density": density,
         "giant_fraction": giant_fraction,
         "fiedler_value": fiedler,
-
-        # Triangle stats
         "avg_triangles_per_edge": avg_triangle_degree,
         "variance_triangles_per_edge": variance_triangle_degree,
         "avg_triangles_per_node": avg_triangle_participation,
         "variance_triangles_per_node": variance_triangle_participation,
-
-        # Topology
         "betti_0": betti_0,
         "betti_1": betti_1,
         "betti_2": betti_2,
         "total_persistence": total_persistence,
-
-        # Geometry
         "avg_edge_length": avg_edge_length,
         "local_density": local_density,
         "r_est": r_est,
-
-        # Spectral gap
         "L2_spectral_gap": L2_gap,
         "L2_max_eigenvalue": L2_max,
         "L2_trace": L2_trace,
         "L2_cond": L2_cond,
-
     }
 
 
@@ -390,7 +372,7 @@ for r in r_values:
     results.append(stats)
 
 df = pd.DataFrame(results)
-df.to_csv("experiment_results_with_stats.csv", index=False)
+df.to_csv("vips_experiment.csv", index=False)
 print("Saved results to experiment_results.csv")
 
 

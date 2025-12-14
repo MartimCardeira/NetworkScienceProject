@@ -1,6 +1,8 @@
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 
+df_vips  = pd.read_csv("vips_experiment.csv")
 df_tri   = pd.read_csv("triangle_experiment.csv")
 df_tetra = pd.read_csv("tetrahedron_experiment.csv")
 df_5     = pd.read_csv("5cell_experiment.csv")
@@ -17,7 +19,136 @@ datasets = [
 
 #EXPERIMENT 1 PLOTS
 
+# 1. Critical sigma vs. r value
 
+plt.figure(figsize=(7, 5))
+
+plt.scatter(
+    df_vips["r_value"],
+    df_vips["critical_sigma"],
+    s=60,
+    alpha=0.8
+)
+
+plt.xlabel("r")
+plt.ylabel("Critical σ")
+plt.title("Critical Sigma vs R value")
+plt.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.show()
+
+# 2. Number of Triangles vs. R
+
+x = df_vips["r_value"].values
+y = df_vips["num_triangles"].values
+m, b = np.polyfit(x, y, 1)
+y_fit = m * x + b
+
+# R^2
+r2 = 1 - np.sum((y - y_fit)**2) / np.sum((y - y.mean())**2)
+
+plt.figure(figsize=(7, 5))
+plt.scatter(
+    x,
+    y,
+    s=60,
+    alpha=0.8
+)
+
+idx = np.argsort(x)
+plt.plot(
+    x[idx],
+    y_fit[idx],
+    linestyle="--",
+    linewidth=2
+)
+plt.xlabel("r")
+plt.ylabel("Number of Triangles")
+plt.title("Number of Triangles vs R value")
+plt.grid(True, alpha=0.3)
+
+plt.text(
+    0.05, 0.95,
+    f"$R^2 = {r2:.3f}$",
+    transform=plt.gca().transAxes,
+    fontsize=12,
+    verticalalignment="top"
+)
+
+plt.tight_layout()
+plt.show()
+
+# 3. Critical sigma vs. Average Node Degree
+
+plt.figure(figsize=(7, 5))
+
+plt.scatter(
+    df_vips["avg_degree"],
+    df_vips["critical_sigma"],
+    s=60,
+    alpha=0.8
+)
+
+plt.xlabel("Average Node Degree")
+plt.ylabel("Critical σ")
+plt.title("Critical Sigma vs Average Node Degree")
+plt.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.show()
+
+# 4. Critical sigma vs. Number of Triangles
+
+plt.figure(figsize=(7, 5))
+
+plt.scatter(
+    df_vips["num_triangles"],
+    df_vips["critical_sigma"],
+    s=60,
+    alpha=0.8
+)
+
+plt.xlabel("Number of Triangles")
+plt.ylabel("Critical σ")
+plt.title("Critical Sigma vs Number of Triangles")
+plt.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.show()
+
+# 5. Critical sigma vs. lambda_2
+
+plt.figure(figsize=(7, 5))
+
+plt.scatter(
+    df_vips["L2_spectral_gap"],
+    df_vips["critical_sigma"],
+    s=60,
+    alpha=0.8
+)
+
+plt.xlabel("λ₂")
+plt.ylabel("Critical σ")
+plt.title("Critical Sigma vs Hodge Laplacian λ₂")
+plt.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.show()
+
+# 6. Critical sigma vs. 1st Betti number
+
+plt.figure(figsize=(7, 5))
+
+plt.scatter(
+    df_vips["betti_1"],
+    df_vips["critical_sigma"],
+    s=60,
+    alpha=0.8
+)
+
+plt.xlabel("β₁")
+plt.ylabel("Critical σ")
+plt.title("Critical Sigma vs 1st Betti Number β₁")
+plt.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.show()
 
 #EXPERIMENT 2 PLOTS
 
