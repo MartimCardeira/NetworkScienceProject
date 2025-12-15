@@ -175,7 +175,7 @@ for df, label, color in datasets:
     )
 
 plt.xlabel("p")
-plt.ylabel("Mean Critical σ")
+plt.ylabel("λ₂")
 plt.title("Hodge Laplacian λ₂ vs. p")
 plt.grid(True, alpha=0.3)
 plt.legend()
